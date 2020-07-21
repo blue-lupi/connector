@@ -13,14 +13,14 @@ function centralErrorHandler(err, req, res, next) {
   }
 }
 
-// Whitelisted domains
-let whitelist = ["https://kaffeerudel.at", "http://localhost:3000"];
+// allowlisted domains
+const allowlist = ["https://kaffeerudel.at", "http://localhost:3000"];
 
 // Cross-Origin options
-let corsOptions = {
+const corsOptions = {
   origin: function (origin, callback) {
     console.log("Request from origin: " + origin);
-    if (whitelist.indexOf(origin) !== -1) {
+    if (allowlist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

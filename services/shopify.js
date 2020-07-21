@@ -7,11 +7,11 @@ const request = require("request");
 // Get all orders
 function getOrders() {
   return new Promise((resolve, reject) => {
-    let apiKey = process.env.SHOPIFY_API_KEY;
-    let apiPass = process.env.SHOPIFY_API_PASS;
-    let shopname = "bluelupi";
-    let apiVersion = "2020-07";
-    let resource = "orders";
+    const apiKey = process.env.SHOPIFY_API_KEY;
+    const apiPass = process.env.SHOPIFY_API_PASS;
+    const shopname = "bluelupi";
+    const apiVersion = "2020-07";
+    const resource = "orders";
 
     request.get(
       `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}/${resource}.json?status=any`,
@@ -29,11 +29,11 @@ function getOrders() {
 // Get details by order id
 function getOrderDetails(orderId) {
   return new Promise((resolve, reject) => {
-    let apiKey = process.env.SHOPIFY_API_KEY;
-    let apiPass = process.env.SHOPIFY_API_PASS;
-    let shopname = "bluelupi";
-    let apiVersion = "2020-07";
-    let resource = "orders";
+    const apiKey = process.env.SHOPIFY_API_KEY;
+    const apiPass = process.env.SHOPIFY_API_PASS;
+    const shopname = "bluelupi";
+    const apiVersion = "2020-07";
+    const resource = "orders";
 
     request.get(
       `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}/${resource}/${orderId}.json`,

@@ -29,13 +29,15 @@ router.post("/", (req, res) => {
   res.setHeader("Access-Control-Allow-Methods", "POST");
   if (req.body.hasOwnProperty("refreshToken")) {
     // check if user uses refresh token
-    let token = checkRefreshToken(req.body.refreshToken);
+    const token = checkRefreshToken(req.body.refreshToken);
+
     if (token != null) {
-      let newToken = jwt.sign(
+      const newToken = jwt.sign(
         { id: token.id, username: token.username },
         sec1,
         { expiresIn: config.durationToken }
       );
+
       res.status(200).send({
         success: true,
         err: null,
@@ -56,20 +58,23 @@ router.post("/", (req, res) => {
       username == process.env.AUTH_USERNAME &&
       password == process.env.AUTH_PASSWORD
     ) {
-      let token = jwt.sign({ id: user.id, username: user.username }, sec1, {
+      const token = jwt.sign({ id: user.id, username: user.username }, sec1, {
         expiresIn: config.durationToken,
       });
-      let refreshToken = jwt.sign(
+
+      const refreshToken = jwt.sign(
         { id: user.id, username: user.username },
         sec2,
         { expiresIn: config.durationRefreshToken }
       );
+
       res.status(200).send({
         success: true,
         err: null,
         token,
         refreshToken,
       });
+
       break;
     } else {
       res.status(401).send({
