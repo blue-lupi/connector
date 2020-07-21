@@ -25,7 +25,9 @@ const routes = require("./routes");
 const app = express();
 // Get .env values
 require("dotenv").config();
+//#endregion
 
+//#region > Apply
 app.use(cors(config.corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,6 +37,7 @@ app.use("/", routes);
 app.listen(config.port, () => {
   console.log(`Server is up and running at http://localhost:${config.port}`);
 });
+//#endregion
 
 /**
  * SPDX-License-Identifier: (EUPL-1.2)
