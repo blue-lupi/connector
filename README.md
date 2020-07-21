@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.aichner-christian.com/" target="_blank" rel="noopener noreferrer">
-    <img src="https://github.com/blue-lupi/connector/blob/master/src/assets/react-mdb-firebase.jpg?raw=true" alt="Agency Logo" height="150" style="max-width: 100%" />
+    <img src="https://github.com/blue-lupi/connector/blob/add-shopify-aa1/public/images/blue-lupi-connector.jpg?raw=true" alt="Agency Logo" height="150" style="max-width: 100%" />
   </a>
 </p>
 
