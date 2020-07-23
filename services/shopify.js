@@ -44,30 +44,36 @@ function getOrderDetails(orderId) {
           // JSON parse the response body
           const details = JSON.parse(body);
 
-          resolve({
-            buyer_accepts_marketing: details.order.buyer_accepts_marketing,
-            checkout_id: details.order.checkout_id,
-            confirmed: details.order.confirmed,
-            currency: details.order.currency,
-            created_at: details.order.created_at,
-            status: {
-              paid: details.order.financial_status === "paid" ? true : false,
-              fulfilled:
-                details.order.fulfillment_status === "fulfilled" ? true : false,
-              details: details.order.fulfillments,
-            },
-            items: details.order.line_items,
-            name: details.order.name,
-            shipping: details.order.shipping_address,
-            weight: details.order.total_weight,
-            price: {
-              tax: {
-                included: details.order.tax_included,
-                total: details.order.total_tax,
+          if (details.order) {
+            resolve({
+              buyer_accepts_marketing: details.order.buyer_accepts_marketing,
+              checkout_id: details.order.checkout_id,
+              confirmed: details.order.confirmed,
+              currency: details.order.currency,
+              created_at: details.order.created_at,
+              status: {
+                paid: details.order.financial_status === "paid" ? true : false,
+                fulfilled:
+                  details.order.fulfillment_status === "fulfilled"
+                    ? true
+                    : false,
+                details: details.order.fulfillments,
               },
-              total: details.order.total_price,
-            },
-          });
+              items: details.order.line_items,
+              name: details.order.name,
+              shipping: details.order.shipping_address,
+              weight: details.order.total_weight,
+              price: {
+                tax: {
+                  included: details.order.tax_included,
+                  total: details.order.total_tax,
+                },
+                total: details.order.total_price,
+              },
+            });
+          } else {
+            resolve(null);
+          }
         }
       }
     );
