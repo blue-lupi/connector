@@ -4,7 +4,7 @@
   "editor.snippetSuggestions": "top",
   "editor.rulers": [120],
   "terminal.integrated.fontFamily": "Consolas",
-  "workbench.colorTheme": "Kimbie Dark",
+  "workbench.colorTheme": "NetBeans Light Theme",
   "cSpell.ignoreWords": [
     "aichner",
     "eupl",

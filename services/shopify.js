@@ -44,30 +44,86 @@ function getOrderDetails(orderId) {
           // JSON parse the response body
           const details = JSON.parse(body);
 
-          resolve({
-            buyer_accepts_marketing: details.order.buyer_accepts_marketing,
-            checkout_id: details.order.checkout_id,
-            confirmed: details.order.confirmed,
-            currency: details.order.currency,
-            created_at: details.order.created_at,
-            status: {
-              paid: details.order.financial_status === "paid" ? true : false,
-              fulfilled:
-                details.order.fulfillment_status === "fulfilled" ? true : false,
-              details: details.order.fulfillments,
-            },
-            items: details.order.line_items,
-            name: details.order.name,
-            shipping: details.order.shipping_address,
-            weight: details.order.total_weight,
-            price: {
-              tax: {
-                included: details.order.tax_included,
-                total: details.order.total_tax,
+          if (details.order) {
+            resolve({
+              buyer_accepts_marketing: details.order.buyer_accepts_marketing,
+              checkout_id: details.order.checkout_id,
+              confirmed: details.order.confirmed,
+              currency: details.order.currency,
+              created_at: details.order.created_at,
+              status: {
+                paid: details.order.financial_status === "paid" ? true : false,
+                fulfilled:
+                  details.order.fulfillment_status === "fulfilled"
+                    ? true
+                    : false,
+                details: details.order.fulfillments,
               },
-              total: details.order.total_price,
-            },
+              items: details.order.line_items,
+              name: details.order.name,
+              shipping: details.order.shipping_address,
+              weight: details.order.total_weight,
+              price: {
+                tax: {
+                  included: details.order.tax_included,
+                  total: details.order.total_tax,
+                },
+                total: details.order.total_price,
+              },
+            });
+          } else {
+            resolve(null);
+          }
+        }
+      }
+    );
+  });
+}
+
+// Get available quantity per product
+function getAvailable() {
+  return new Promise((resolve, reject) => {
+    const apiKey = process.env.SHOPIFY_API_KEY;
+    const apiPass = process.env.SHOPIFY_API_PASS;
+    const shopname = "bluelupi";
+    const apiVersion = "2020-07";
+    const resource = "products";
+    const collection = "154468253781";
+
+    // Define basic URL for query
+    const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
+
+    request.get(
+      `${queryUrl}/${resource}.json?collection_id=${collection}`,
+      (error, response, body) => {
+        if (error != null) {
+          reject("Error receiving orders: " + error);
+        } else {
+          // JSON parse the response body
+          const details = JSON.parse(body);
+
+          let products = [];
+
+          details.products.forEach((product) => {
+            products = [
+              ...products,
+              {
+                id: Buffer.from(product.admin_graphql_api_id).toString(
+                  "base64"
+                ),
+                variants: product.variants.map((variant) => {
+                  return {
+                    id: Buffer.from(variant.admin_graphql_api_id).toString(
+                      "base64"
+                    ),
+                    quantity: variant.inventory_quantity,
+                  };
+                }),
+              },
+            ];
           });
+
+          resolve(products);
         }
       }
     );
@@ -78,6 +134,7 @@ function getOrderDetails(orderId) {
 //#region > Exports
 module.exports.getOrders = getOrders;
 module.exports.getOrderDetails = getOrderDetails;
+module.exports.getAvailable = getAvailable;
 //#endregion
 
 /**
