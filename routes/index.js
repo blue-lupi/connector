@@ -11,6 +11,10 @@ const shopify = require("../services/shopify.js");
 //#region > Routes
 const router = express.Router();
 
+router.get("/", (req, res) => {
+  res.status(200);
+});
+
 router.post("/orders", (req, res) => {
   if (req.body.orderId) {
     // Returns details of one specific order

@@ -14,7 +14,11 @@ function centralErrorHandler(err, req, res, next) {
 }
 
 // allowlisted domains
-const allowlist = ["https://kaffeerudel.at", "http://localhost:3000"];
+const allowlist = [
+  "https://kaffeerudel.at",
+  "http://localhost:3000", // Remove on production version
+  "https://aichner.cloud",
+];
 
 // Cross-Origin options
 const corsOptions = {
