@@ -12,7 +12,7 @@ const shopify = require("../services/shopify.js");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.status(200).send(res);
+  res.sendStatus(200);
 });
 
 router.post("/orders", (req, res) => {
