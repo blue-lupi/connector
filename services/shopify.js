@@ -81,14 +81,13 @@ function getOrderDetails(orderId) {
 }
 
 // Get available quantity per product
-function getAvailable() {
+function getAvailable(collection) {
   return new Promise((resolve, reject) => {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiPass = process.env.SHOPIFY_API_PASS;
     const shopname = "bluelupi";
     const apiVersion = "2020-07";
     const resource = "products";
-    const collection = "154468253781";
 
     // Define basic URL for query
     const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
@@ -102,28 +101,32 @@ function getAvailable() {
           // JSON parse the response body
           const details = JSON.parse(body);
 
-          let products = [];
+          if (details) {
+            let products = [];
 
-          details.products.forEach((product) => {
-            products = [
-              ...products,
-              {
-                id: Buffer.from(product.admin_graphql_api_id).toString(
-                  "base64"
-                ),
-                variants: product.variants.map((variant) => {
-                  return {
-                    id: Buffer.from(variant.admin_graphql_api_id).toString(
-                      "base64"
-                    ),
-                    quantity: variant.inventory_quantity,
-                  };
-                }),
-              },
-            ];
-          });
+            details.products.forEach((product) => {
+              products = [
+                ...products,
+                {
+                  id: Buffer.from(product.admin_graphql_api_id).toString(
+                    "base64"
+                  ),
+                  variants: product.variants.map((variant) => {
+                    return {
+                      id: Buffer.from(variant.admin_graphql_api_id).toString(
+                        "base64"
+                      ),
+                      quantity: variant.inventory_quantity,
+                    };
+                  }),
+                },
+              ];
+            });
 
-          resolve(products);
+            resolve(products);
+          } else {
+            resolve(null);
+          }
         }
       }
     );
