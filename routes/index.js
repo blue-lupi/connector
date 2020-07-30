@@ -41,7 +41,7 @@ router.post("/orders", (req, res) => {
 
 router.post("/products", (req, res) => {
   shopify
-    .getAvailable()
+    .getAvailable(req.body.collection)
     .then((products) => {
       res.status(200).send(products);
     })
