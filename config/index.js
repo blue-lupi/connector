@@ -17,7 +17,7 @@ function centralErrorHandler(err, req, res, next) {
 const allowlist = [
   "https://kaffeerudel.at",
   //"http://localhost:3000",
-  "https://dev.kaffeerudel.at/",
+  "https://dev.kaffeerudel.at",
   "https://aichner.cloud",
 ];
 
