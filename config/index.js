@@ -16,8 +16,6 @@ function centralErrorHandler(err, req, res, next) {
 // allowlisted domains
 const allowlist = [
   "https://kaffeerudel.at",
-  "http://localhost:3000", // Remove in production
-  "http://192.168.8.166:3000",
   "https://dev.kaffeerudel.at",
   "https://aichner.cloud",
 ];
