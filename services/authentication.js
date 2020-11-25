@@ -54,6 +54,7 @@ router.post("/", (req, res) => {
   } else {
     // if not refresh token use username and password
     const { username, password } = req.body;
+
     if (
       username == process.env.AUTH_USERNAME &&
       password == process.env.AUTH_PASSWORD
