@@ -162,11 +162,23 @@ function getAllProducts() {
                   src: product.image.src,
                   variant_ids: product.image.variant_ids,
                 },
-                images: product.images,
+                images: product.images.map((image) => {
+                  return {
+                    src: image.src,
+                  };
+                }),
                 options: product.options,
                 product_type: product.product_type,
                 title: product.title,
-                variants: product.variants,
+                variants: product.variants.map((variant) => {
+                  return {
+                    grams: variant.grams,
+                    inventory_quantity: variant.inventory_quantity,
+                    title: variant.title,
+                    price: variant.price,
+                    option: variant.option1,
+                  };
+                }),
               },
             ];
           });
