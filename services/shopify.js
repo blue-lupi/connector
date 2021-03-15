@@ -93,7 +93,7 @@ function getAvailable(collection) {
     const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
 
     request.get(
-      `${queryUrl}/${resource}.json?collection_id=${collection}`,
+      `${queryUrl}/${resource}.json`,
       (error, response, body) => {
         if (error != null) {
           reject("Error receiving orders: " + error);
@@ -122,8 +122,39 @@ function getAvailable(collection) {
                 },
               ];
             });
-
             resolve(products);
+          } else {
+            resolve(null);
+          }
+        }
+      }
+    );
+  });
+}
+
+// Get available quantity per product
+function getAllProducts() {
+  return new Promise((resolve, reject) => {
+    const apiKey = process.env.SHOPIFY_API_KEY;
+    const apiPass = process.env.SHOPIFY_API_PASS;
+    const shopname = "bluelupi";
+    const apiVersion = "2020-07";
+    const resource = "products";
+
+    // Define basic URL for query
+    const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
+
+    request.get(
+      `${queryUrl}/${resource}.json`,
+      (error, response, body) => {
+        if (error != null) {
+          reject("Error receiving orders: " + error);
+        } else {
+          // JSON parse the response body
+          const details = JSON.parse(body);
+
+          if (details) {
+            resolve(details?.products);
           } else {
             resolve(null);
           }
@@ -138,6 +169,7 @@ function getAvailable(collection) {
 module.exports.getOrders = getOrders;
 module.exports.getOrderDetails = getOrderDetails;
 module.exports.getAvailable = getAvailable;
+module.exports.getAllProducts = getAllProducts;
 //#endregion
 
 /**
