@@ -1,6 +1,8 @@
 //#region > Imports
+const { request, GraphQLClient } = require("graphql-request");
 // Request is designed to be the simplest way possible to make http calls
-const request = require("request");
+//const request = require("request");
+const query = require("../queries/index.js");
 //#endregion
 
 //#region > Functions
@@ -135,60 +137,91 @@ function getAllProducts() {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiPass = process.env.SHOPIFY_API_PASS;
     const shopname = "bluelupi";
-    const apiVersion = "2020-07";
-    const resource = "products";
+    const apiVersion = "2021-01";
 
     // Define basic URL for query
-    const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
+    const queryUrl = `https://${shopname}.myshopify.com/admin/api/${apiVersion}/graphql.json`;
 
-    request.get(`${queryUrl}/${resource}.json`, (error, response, body) => {
+    try {
+      const client = new GraphQLClient(queryUrl, {
+        headers: {
+          "X-Shopify-Access-Token": "5a905e875d40479bf73ec5576621416c",
+        },
+      });
+
+      client.request(query.query).then((data) => {
+        let products = data.products.edges.map((product) => {
+          const info = product.node;
+
+          return {
+            collection: info.collections.edges[0]
+              ? info.collections.edges[0].node.handle
+              : null,
+            descriptionHtml: info.descriptionHtml,
+            id: info.id,
+            options: info.options,
+            tags: info.tags,
+            title: info.title,
+            variants: info.variants,
+          };
+        });
+
+        resolve(products);
+      });
+    } catch (e) {
+      // Anweisungen für jeden Fehler
+      console.log(e); // Fehler-Objekt an die Error-Funktion geben
+    }
+
+    /* request.get(`${queryUrl}/${resource}.json`, (error, response, body) => {
       if (error != null) {
         reject("Error receiving orders: " + error);
       } else {
         // JSON parse the response body
         const details = JSON.parse(body);
 
+        resolve(details);
+
         if (details) {
-          let results = [];
+            let results = [];
 
-          details.products.forEach((product, p) => {
-            console.log(product);
-            results = [
-              ...results,
-              {
-                body_html: product.body_html,
-                handle: product.handle,
-                image: {
-                  src: product.image.src,
-                  variant_ids: product.image.variant_ids,
+            details.products.forEach((product, p) => {
+              results = [
+                ...results,
+                {
+                  body_html: product.body_html,
+                  handle: product.handle,
+                  image: {
+                    src: product.image.src,
+                    variant_ids: product.image.variant_ids,
+                  },
+                  images: product.images.map((image) => {
+                    return {
+                      src: image.src,
+                    };
+                  }),
+                  options: product.options,
+                  product_type: product.product_type,
+                  title: product.title,
+                  variants: product.variants.map((variant) => {
+                    return {
+                      grams: variant.grams,
+                      inventory_quantity: variant.inventory_quantity,
+                      title: variant.title,
+                      price: variant.price,
+                      option: variant.option1,
+                    };
+                  }),
                 },
-                images: product.images.map((image) => {
-                  return {
-                    src: image.src,
-                  };
-                }),
-                options: product.options,
-                product_type: product.product_type,
-                title: product.title,
-                variants: product.variants.map((variant) => {
-                  return {
-                    grams: variant.grams,
-                    inventory_quantity: variant.inventory_quantity,
-                    title: variant.title,
-                    price: variant.price,
-                    option: variant.option1,
-                  };
-                }),
-              },
-            ];
-          });
+              ];
+            });
 
-          resolve(results);
-        } else {
-          resolve(null);
-        }
+            resolve(results);
+          } else {
+            resolve(null);
+          }
       }
-    });
+    });*/
   });
 }
 //#endregion
