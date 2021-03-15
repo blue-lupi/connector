@@ -83,55 +83,6 @@ function getOrderDetails(orderId) {
 }
 
 // Get available quantity per product
-function getAvailable(collection) {
-  return new Promise((resolve, reject) => {
-    const apiKey = process.env.SHOPIFY_API_KEY;
-    const apiPass = process.env.SHOPIFY_API_PASS;
-    const shopname = "bluelupi";
-    const apiVersion = "2020-07";
-    const resource = "products";
-
-    // Define basic URL for query
-    const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
-
-    request.get(`${queryUrl}/${resource}.json`, (error, response, body) => {
-      if (error != null) {
-        reject("Error receiving orders: " + error);
-      } else {
-        // JSON parse the response body
-        const details = JSON.parse(body);
-
-        if (details) {
-          let products = [];
-
-          details.products.forEach((product) => {
-            products = [
-              ...products,
-              {
-                id: Buffer.from(product.admin_graphql_api_id).toString(
-                  "base64"
-                ),
-                variants: product.variants.map((variant) => {
-                  return {
-                    id: Buffer.from(variant.admin_graphql_api_id).toString(
-                      "base64"
-                    ),
-                    quantity: variant.inventory_quantity,
-                  };
-                }),
-              },
-            ];
-          });
-          resolve(products);
-        } else {
-          resolve(null);
-        }
-      }
-    });
-  });
-}
-
-// Get available quantity per product
 function getAllProducts() {
   return new Promise((resolve, reject) => {
     const apiKey = process.env.SHOPIFY_API_KEY;
@@ -172,56 +123,6 @@ function getAllProducts() {
       // Anweisungen für jeden Fehler
       console.log(e); // Fehler-Objekt an die Error-Funktion geben
     }
-
-    /* request.get(`${queryUrl}/${resource}.json`, (error, response, body) => {
-      if (error != null) {
-        reject("Error receiving orders: " + error);
-      } else {
-        // JSON parse the response body
-        const details = JSON.parse(body);
-
-        resolve(details);
-
-        if (details) {
-            let results = [];
-
-            details.products.forEach((product, p) => {
-              results = [
-                ...results,
-                {
-                  body_html: product.body_html,
-                  handle: product.handle,
-                  image: {
-                    src: product.image.src,
-                    variant_ids: product.image.variant_ids,
-                  },
-                  images: product.images.map((image) => {
-                    return {
-                      src: image.src,
-                    };
-                  }),
-                  options: product.options,
-                  product_type: product.product_type,
-                  title: product.title,
-                  variants: product.variants.map((variant) => {
-                    return {
-                      grams: variant.grams,
-                      inventory_quantity: variant.inventory_quantity,
-                      title: variant.title,
-                      price: variant.price,
-                      option: variant.option1,
-                    };
-                  }),
-                },
-              ];
-            });
-
-            resolve(results);
-          } else {
-            resolve(null);
-          }
-      }
-    });*/
   });
 }
 //#endregion
@@ -229,7 +130,6 @@ function getAllProducts() {
 //#region > Exports
 module.exports.getOrders = getOrders;
 module.exports.getOrderDetails = getOrderDetails;
-module.exports.getAvailable = getAvailable;
 module.exports.getAllProducts = getAllProducts;
 //#endregion
 
