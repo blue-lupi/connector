@@ -92,43 +92,40 @@ function getAvailable(collection) {
     // Define basic URL for query
     const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
 
-    request.get(
-      `${queryUrl}/${resource}.json`,
-      (error, response, body) => {
-        if (error != null) {
-          reject("Error receiving orders: " + error);
+    request.get(`${queryUrl}/${resource}.json`, (error, response, body) => {
+      if (error != null) {
+        reject("Error receiving orders: " + error);
+      } else {
+        // JSON parse the response body
+        const details = JSON.parse(body);
+
+        if (details) {
+          let products = [];
+
+          details.products.forEach((product) => {
+            products = [
+              ...products,
+              {
+                id: Buffer.from(product.admin_graphql_api_id).toString(
+                  "base64"
+                ),
+                variants: product.variants.map((variant) => {
+                  return {
+                    id: Buffer.from(variant.admin_graphql_api_id).toString(
+                      "base64"
+                    ),
+                    quantity: variant.inventory_quantity,
+                  };
+                }),
+              },
+            ];
+          });
+          resolve(products);
         } else {
-          // JSON parse the response body
-          const details = JSON.parse(body);
-
-          if (details) {
-            let products = [];
-
-            details.products.forEach((product) => {
-              products = [
-                ...products,
-                {
-                  id: Buffer.from(product.admin_graphql_api_id).toString(
-                    "base64"
-                  ),
-                  variants: product.variants.map((variant) => {
-                    return {
-                      id: Buffer.from(variant.admin_graphql_api_id).toString(
-                        "base64"
-                      ),
-                      quantity: variant.inventory_quantity,
-                    };
-                  }),
-                },
-              ];
-            });
-            resolve(products);
-          } else {
-            resolve(null);
-          }
+          resolve(null);
         }
       }
-    );
+    });
   });
 }
 
@@ -144,23 +141,42 @@ function getAllProducts() {
     // Define basic URL for query
     const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
 
-    request.get(
-      `${queryUrl}/${resource}.json`,
-      (error, response, body) => {
-        if (error != null) {
-          reject("Error receiving orders: " + error);
-        } else {
-          // JSON parse the response body
-          const details = JSON.parse(body);
+    request.get(`${queryUrl}/${resource}.json`, (error, response, body) => {
+      if (error != null) {
+        reject("Error receiving orders: " + error);
+      } else {
+        // JSON parse the response body
+        const details = JSON.parse(body);
 
-          if (details) {
-            resolve(details?.products);
-          } else {
-            resolve(null);
-          }
+        if (details) {
+          let results = [];
+
+          details.products.forEach((product, p) => {
+            console.log(product);
+            results = [
+              ...results,
+              {
+                body_html: product.body_html,
+                handle: product.handle,
+                image: {
+                  src: product.image.src,
+                  variant_ids: product.image.variant_ids,
+                },
+                images: product.images,
+                options: product.options,
+                product_type: product.product_type,
+                title: product.title,
+                variants: product.variants,
+              },
+            ];
+          });
+
+          resolve(results);
+        } else {
+          resolve(null);
         }
       }
-    );
+    });
   });
 }
 //#endregion
