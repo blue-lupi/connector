@@ -18,7 +18,8 @@ const allowlist = [
   "https://kaffeerudel.at",
   "https://www.kaffeerudel.at",
   "https://aichner.cloud",
-  "http://localhost:3000", // Remove in production
+  "https://preview.kaffeerudel.at",
+  //"http://localhost:3000", // Remove in production
 ];
 
 // Cross-Origin options
