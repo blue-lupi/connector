@@ -39,9 +39,9 @@ router.post("/orders", (req, res) => {
   }
 });
 
-router.post("/products", (req, res) => {
+router.post("/all", (req, res) => {
   shopify
-    .getAvailable(req.body.collection)
+    .getAllProducts()
     .then((products) => {
       res.status(200).send(products);
     })

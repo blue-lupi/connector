@@ -1,6 +1,8 @@
 //#region > Imports
+const { request, GraphQLClient } = require("graphql-request");
 // Request is designed to be the simplest way possible to make http calls
-const request = require("request");
+//const request = require("request");
+const query = require("../queries/index.js");
 //#endregion
 
 //#region > Functions
@@ -81,55 +83,46 @@ function getOrderDetails(orderId) {
 }
 
 // Get available quantity per product
-function getAvailable(collection) {
+function getAllProducts() {
   return new Promise((resolve, reject) => {
     const apiKey = process.env.SHOPIFY_API_KEY;
     const apiPass = process.env.SHOPIFY_API_PASS;
     const shopname = "bluelupi";
-    const apiVersion = "2020-07";
-    const resource = "products";
+    const apiVersion = "2021-01";
 
     // Define basic URL for query
-    const queryUrl = `https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}`;
+    const queryUrl = `https://${shopname}.myshopify.com/admin/api/${apiVersion}/graphql.json`;
 
-    request.get(
-      `${queryUrl}/${resource}.json?collection_id=${collection}`,
-      (error, response, body) => {
-        if (error != null) {
-          reject("Error receiving orders: " + error);
-        } else {
-          // JSON parse the response body
-          const details = JSON.parse(body);
+    try {
+      const client = new GraphQLClient(queryUrl, {
+        headers: {
+          "X-Shopify-Access-Token": "5a905e875d40479bf73ec5576621416c",
+        },
+      });
 
-          if (details) {
-            let products = [];
+      client.request(query.query).then((data) => {
+        let products = data.products.edges.map((product) => {
+          const info = product.node;
 
-            details.products.forEach((product) => {
-              products = [
-                ...products,
-                {
-                  id: Buffer.from(product.admin_graphql_api_id).toString(
-                    "base64"
-                  ),
-                  variants: product.variants.map((variant) => {
-                    return {
-                      id: Buffer.from(variant.admin_graphql_api_id).toString(
-                        "base64"
-                      ),
-                      quantity: variant.inventory_quantity,
-                    };
-                  }),
-                },
-              ];
-            });
+          return {
+            collection: info.collections.edges[0]
+              ? info.collections.edges[0].node.handle
+              : null,
+            descriptionHtml: info.descriptionHtml,
+            id: info.id,
+            options: info.options,
+            tags: info.tags,
+            title: info.title,
+            variants: info.variants,
+          };
+        });
 
-            resolve(products);
-          } else {
-            resolve(null);
-          }
-        }
-      }
-    );
+        resolve(products);
+      });
+    } catch (e) {
+      // Anweisungen für jeden Fehler
+      console.log(e); // Fehler-Objekt an die Error-Funktion geben
+    }
   });
 }
 //#endregion
@@ -137,7 +130,7 @@ function getAvailable(collection) {
 //#region > Exports
 module.exports.getOrders = getOrders;
 module.exports.getOrderDetails = getOrderDetails;
-module.exports.getAvailable = getAvailable;
+module.exports.getAllProducts = getAllProducts;
 //#endregion
 
 /**
