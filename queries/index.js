@@ -24,7 +24,7 @@ const query = gql`
               values
             }
             descriptionHtml
-            variants(first: 5) {
+            variants(first: 10) {
               edges {
                 node {
                   id
